@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 )
 
 const port = ":4000"
@@ -11,12 +12,16 @@ const port = ":4000"
 type Application struct{}
 
 func main() {
-	// app := Application{}
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprint(w, "Home Page")
-	})
+	app := Application{}
+	server := http.Server{
+		Addr:         port,
+		Handler:      app.routes(),
+		ReadTimeout:  30 * time.Second,
+		WriteTimeout: 30 * time.Second,
+		IdleTimeout:  30 * time.Second,
+	}
 	fmt.Println("Starting server at port: ", port)
-	if err := http.ListenAndServe(port, nil); err != nil {
+	if err := server.ListenAndServe(); err != nil {
 		log.Println("Failed to start Server: ", err)
 	}
 }
